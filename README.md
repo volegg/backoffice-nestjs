@@ -125,3 +125,14 @@ Open RestAPI-client, go to Headers section/tab and add `token` (from /api/auth/l
 ```sh
 npm run build
 ```
+
+## Generate documentation
+
+Generate and run documentation server
+
+```sh
+npm run typedocs
+```
+
+[Open documentation](http://127.0.0.1:8080/index.html)
+
