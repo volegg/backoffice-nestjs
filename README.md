@@ -62,8 +62,8 @@ POST /api/auth/login
 
 ```json
 {
-    "email": "god.user@god.email",
-    "password": "111111"
+    "email": "god@god.email",
+    "password": "AA1111"
 }
 ```
 
@@ -74,7 +74,7 @@ POST /api/auth/login
 ```json
 {
     "email": "new.admin@test.com",
-    "password": "111111"
+    "password": "AA1111"
 }
 ```
 
@@ -87,7 +87,7 @@ POST /api/users/admin
 ```json
 {
     "email": "email@domain.com",
-    "password": "111111",
+    "password": "AA1111",
     "name": "admin"
 }
 ```
@@ -101,7 +101,7 @@ After logged in
 ```json
 {
     "email": "god.user@god.email",
-    "password": "111111"
+    "password": "AA1111"
 }
 ```
 
@@ -135,4 +135,3 @@ npm run typedocs
 ```
 
 [Open documentation](http://127.0.0.1:8080/index.html)
-
