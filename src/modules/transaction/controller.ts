@@ -14,24 +14,24 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserService, IGenericMessageBody } from './service';
-import { UserUpdateDto } from './dto/update';
+import { TransactionService, IGenericMessageBody } from './service';
+import { TransactionUpdateDto } from './dto/update';
 import { IsOwner, Permissions, PermissionsGuard } from 'utils/permission.guard';
-import type { User } from './model';
-import { UserRegisterDto } from './dto/register';
+import type { Transaction } from './model';
+import { TransactionCreateDto } from './dto/create';
 
 @ApiBearerAuth()
-@ApiTags('users')
-@Controller('api/users')
-export class UserController {
-  constructor(private readonly service: UserService) { }
+@ApiTags('transactions')
+@Controller('api/transactions')
+export class TransactionController {
+  constructor(private readonly service: TransactionService) { }
 
   @Get()
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
   @Permissions('read:any')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async getPage(@Query('offset') offset: number, @Query('limit') limit: number): Promise<User[]> {
+  async getPage(@Query('offset') offset: number, @Query('limit') limit: number): Promise<Transaction[]> {
     return await this.service.getUsers(offset, limit);
   }
 
@@ -41,7 +41,7 @@ export class UserController {
   @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async getById(@Param('id') id: string): Promise<User> {
+  async getOne(@Param('id') id: string): Promise<Transaction> {
     const user = await this.service.get(id);
 
     if (!user) {
@@ -58,17 +58,8 @@ export class UserController {
   @Permissions('create')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
-  async create(@Body() payload: UserRegisterDto) {
-    return await this.service.createStandart(payload);
-  }
-
-  @Post('/admin')
-  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('create')
-  @ApiResponse({ status: 200, description: 'Patch User Request Received' })
-  @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
-  async createAdmin(@Body() payload: UserRegisterDto) {
-    return await this.service.createAdmin(payload);
+  async create(@Body() payload: TransactionCreateDto) {
+    return await this.service.create(payload);
   }
 
   @Patch(':id')
@@ -78,7 +69,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async update(@Param('id') id: string, @Body() payload: UserUpdateDto) {
+  async update(@Param('id') id: string, @Body() payload: TransactionUpdateDto) {
     return await this.service.edit(id, payload);
   }
 

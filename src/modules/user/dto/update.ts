@@ -1,25 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  MinLength,
-  IsAlphanumeric,
-} from 'class-validator';
-import { AppRoles } from 'const';
+import { PartialType } from '@nestjs/mapped-types';
+import { UserCreateDto } from './create';
 
-export class UserUpdateDto {
-  @ApiProperty()
-  @IsAlphanumeric()
-  @IsNotEmpty()
-    name: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @MinLength(6)
-    password: string;
-
-  @ApiProperty()
-    roles: AppRoles[];
-
-  @ApiProperty()
-    permissions: string[];
-}
+export class UserUpdateDto extends PartialType(UserCreateDto) { }

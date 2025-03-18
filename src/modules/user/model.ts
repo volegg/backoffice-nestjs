@@ -1,30 +1,34 @@
-import { Schema, Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import * as crypto from 'crypto';
 import { AppRoles } from 'const';
 
-export const User = new Schema({
-  email: { type: String, required: true },
-  name: { type: String, minLength: 3 },
-  password: { type: String, required: true },
-  roles: [{ type: String, require: true }],
-  permissions: [{ type: String }],
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+@Schema({
+  timestamps: true,
+  autoIndex: true,
+})
+export class User extends Document {
+  @Prop({ required: true, unique: true })
+    email: string;
 
-export interface IUser extends Document {
-  readonly _id: Schema.Types.ObjectId;
+  @Prop({ required: true, minlength: 6 })
+    password: string;
 
-  readonly email: string;
+  @Prop({ required: true })
+    name: string;
 
-  readonly createdAt: Date;
+  @Prop({ type: [String], enum: AppRoles, default: [AppRoles.standart] })
+    roles: [AppRoles];
 
-  name: string;
-
-  password: string;
-
-  roles: AppRoles[];
-
-  permissions: string[];
+  @Prop({ type: [String], default: [] })
+    permissions: string[];
 }
+
+export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre<User>('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
+  this.password = crypto.createHmac('sha256', this.password).digest('hex')
+  next();
+});

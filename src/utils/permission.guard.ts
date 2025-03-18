@@ -2,7 +2,7 @@ import { SetMetadata, CanActivate, ExecutionContext, Injectable, ForbiddenExcept
 import { Reflector } from '@nestjs/core';
 import { AppRoles } from '../const';
 import type { Request } from 'express';
-import type { IUser } from 'modules/user/model';
+import type { User } from 'modules/user/model';
 
 const permissionKey = 'permissions';
 const docOwner = 'docOwner';
@@ -26,12 +26,11 @@ export class PermissionsGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-
     if (!user) {
       throw new ForbiddenException('Executor not found or not authenticated');
     }
 
-    if (user.roles.includes(AppRoles.HALK)) {
+    if (user.roles.includes(AppRoles.halk)) {
       return true;
     }
 
@@ -40,9 +39,6 @@ export class PermissionsGuard implements CanActivate {
     }
 
     let hasAnyMarkToAvoidOwner = false;
-
-    console.log('requiredPermissions', requiredPermissions);
-    console.log('user.permissions', user.permissions);
 
     const hasPermission = requiredPermissions.every(permission => {
       if (permission.endsWith(':any')) {
@@ -69,7 +65,7 @@ export class PermissionsGuard implements CanActivate {
     return true;
   }
 
-  private isDocOwner(fieldName: string, request: Request, user: IUser): boolean {
+  private isDocOwner(fieldName: string, request: Request, user: User): boolean {
     const value = String(user[fieldName]);
 
     if (request.params && request.params[fieldName] && request.params[fieldName] === value) {

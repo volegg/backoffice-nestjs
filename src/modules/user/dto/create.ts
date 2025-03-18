@@ -1,22 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsAlphanumeric,
-  MinLength,
-} from 'class-validator';
-import { UserRegisterDto } from '../../auth/dto/register';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { AppRoles } from 'const';
+import { UserRegisterDto } from './register';
 
 export class UserCreateDto extends UserRegisterDto {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+    name: string;
+
+  @ApiProperty({ enum: AppRoles, default: [AppRoles.standart] })
+  @IsEnum(AppRoles)
     roles: AppRoles[];
 
-  @ApiProperty()
-    permissions: string[];
-
-  @ApiProperty()
-  @IsAlphanumeric()
-  @IsNotEmpty()
-  @MinLength(3)
-    name: string;
+  @ApiProperty({ type: [String], default: [] })
+  @IsOptional()
+    permissions?: string[];
 }

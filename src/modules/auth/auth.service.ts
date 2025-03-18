@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
 import { UserService } from '../user/service';
-import { IUser } from '../user/model';
+import type { User } from '../user/model';
 import { LoginDto } from './dto/login';
 
 export type ITokenReturnBody = {
@@ -25,14 +25,14 @@ export class AuthService {
   async createToken({
     _id,
     email,
-  }: IUser): Promise<ITokenReturnBody> {
+  }: User): Promise<ITokenReturnBody> {
     return {
       expires: this.expiration,
       token: this.jwtService.sign({ _id, email }),
     };
   }
 
-  async validateUser(payload: LoginDto): Promise<IUser> {
+  async validateUser(payload: LoginDto): Promise<User> {
     const user = await this.userService.getByUsernameAndPass(
       payload.email,
       payload.password,
