@@ -30,6 +30,12 @@
 
 ## Development
 
+Copy ENV variables file `.env.example` to `.env`, 
+
+```sh
+cp .env.example .env
+```
+
 Start development run any rest client to use API <http://localhost:3333/>
 
 ```sh
@@ -55,7 +61,7 @@ Uses husky for pre-commit and pre-push to autofix all fixable issues and validat
 
 POST /api/auth/login
 
-```
+```json
 {
     "email": "god.user@god.email",
     "password": "111111"
@@ -66,7 +72,7 @@ POST /api/auth/login
 
 POST /api/auth/login
 
-```
+```json
 {
     "email": "new.admin@test.com",
     "password": "111111"

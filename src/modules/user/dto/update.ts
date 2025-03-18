@@ -10,16 +10,16 @@ export class UserUpdateDto {
   @ApiProperty()
   @IsAlphanumeric()
   @IsNotEmpty()
-  name: string;
+    name: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @MinLength(6)
-  password: string;
+    password: string;
 
   @ApiProperty()
-  roles: AppRoles[];
+    roles: AppRoles[];
 
   @ApiProperty()
-  permissions: string[];
+    permissions: string[];
 }

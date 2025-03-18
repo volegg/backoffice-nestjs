@@ -11,12 +11,12 @@ export class UserRegisterDto {
   })
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+    email: string;
 
   @ApiProperty({
     required: true,
   })
   @IsNotEmpty()
   @MinLength(6)
-  password: string;
+    password: string;
 }

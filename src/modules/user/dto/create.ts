@@ -9,14 +9,14 @@ import { AppRoles } from 'const';
 
 export class UserCreateDto extends UserRegisterDto {
   @ApiProperty()
-  roles: AppRoles[];
+    roles: AppRoles[];
 
   @ApiProperty()
-  permissions: string[];
+    permissions: string[];
 
   @ApiProperty()
   @IsAlphanumeric()
   @IsNotEmpty()
   @MinLength(3)
-  name: string;
+    name: string;
 }

@@ -1,7 +1,8 @@
 import { SetMetadata, CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AppRoles } from '../const';
-import { Request } from 'express';
+import type { Request } from 'express';
+import type { IUser } from 'modules/user/model';
 
 const permissionKey = 'permissions';
 const docOwner = 'docOwner';
@@ -68,7 +69,7 @@ export class PermissionsGuard implements CanActivate {
     return true;
   }
 
-  private isDocOwner(fieldName: string, request: Request, user: any): boolean {
+  private isDocOwner(fieldName: string, request: Request, user: IUser): boolean {
     const value = String(user[fieldName]);
 
     if (request.params && request.params[fieldName] && request.params[fieldName] === value) {

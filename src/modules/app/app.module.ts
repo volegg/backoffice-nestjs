@@ -17,11 +17,11 @@ import { TransactionModule } from 'modules/transactions/module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) =>
-      ({
-        uri: configService.get('DB_URL'),
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      } as MongooseModuleAsyncOptions),
+        ({
+          uri: configService.get('DB_URL'),
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        } as MongooseModuleAsyncOptions),
     }),
     WinstonModule.forRootAsync({
       imports: [ConfigModule],
