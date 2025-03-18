@@ -56,7 +56,6 @@ npm run lint -- --fix
 
 Uses husky for pre-commit and pre-push to autofix all fixable issues and validate types.
 
-
 ### GOD role
 
 POST /api/auth/login
@@ -91,6 +90,34 @@ POST /api/users/admin
     "password": "111111",
     "name": "admin"
 }
+```
+
+### Use Authorized user for RestAPI-client (JWT)
+
+After logged in
+
+*POST /api/auth/login*
+
+```json
+{
+    "email": "god.user@god.email",
+    "password": "111111"
+}
+```
+
+Recived JWT (token)
+
+```json
+{
+    "expires": 36000,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2Q5OTkzYWI4MTAyOTZhYjkwMzAyYmQiLCJlbWFpbCI6ImdvZC51c2VyQGdvZC5lbWFpbCIsImlhdCI6MTc0MjMxMzkyNiwiZXhwIjoxNzQyMzQ5OTI2fQ.Khq0u0X289aVsmPOT88kYdW7GfxAeNrrhEs2r3rdqBs"
+}
+```
+
+Open RestAPI-client, go to Headers section/tab and add `token` (from /api/auth/login response) to Authorization header
+
+```json
+{ "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2Q5OTkzYWI4MTAyOTZhYjkwMzAyYmQiLCJlbWFpbCI6ImdvZC51c2VyQGdvZC5lbWFpbCIsImlhdCI6MTc0MjMxMzkyNiwiZXhwIjoxNzQyMzQ5OTI2fQ.Khq0u0X289aVsmPOT88kYdW7GfxAeNrrhEs2r3rdqBs" }
 ```
 
 ## Production build
