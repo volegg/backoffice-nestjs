@@ -20,7 +20,7 @@ export class TransactionService {
   ) { }
 
   get(id: string): Promise<Transaction> {
-    return this.model.findById(id).exec();
+    return this.model.findById(id).populate('user').exec();
   }
 
   getUsers(offset: number, limit: number): Promise<Transaction[]> {
