@@ -1,6 +1,6 @@
 import { SetMetadata, CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AppRoles } from '../const';
+import { AppRoles, userDataAccessRoles } from '../const';
 import type { Request } from 'express';
 import type { User } from 'modules/user/model';
 
@@ -24,7 +24,7 @@ export class PermissionsGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const user = request.user as User;
 
     if (!user) {
       throw new ForbiddenException('Executor not found or not authenticated');
@@ -34,28 +34,29 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    if (!user[permissionKey].length || !user.roles.length) {
+    if (!user[permissionKey].length) {
       throw new ForbiddenException('User does not have any permissions');
     }
 
-    const userPermissons = user[permissionKey].map((p) => p.toLowerCase());
-
-    const hasPermission = requiredPermissions.some(permission => {
-      return userPermissons.includes(permission);
-    });
+    const userPermissions = user[permissionKey].map((permission) => permission.toLowerCase());
+    const hasPermission = requiredPermissions.every(userPermissions.includes);
 
     if (!hasPermission) {
       throw new ForbiddenException('Forbidden, user does not have permission');
     }
 
-    const requiresOwnRecord = this.reflector.get<string | undefined>(docOwner, context.getHandler());
+    const hasDataAccessRole = user.roles.some(userDataAccessRoles.includes);
 
-    if (requiresOwnRecord) {
-      const isOwnRecord = this.isDocOwner(requiresOwnRecord, request, user);
+    if (!hasDataAccessRole) {
+      const requiresOwnRecord = this.reflector.get<string | undefined>(docOwner, context.getHandler());
 
-      if (!isOwnRecord) {
-        throw new ForbiddenException('Forbidden, only owner can access');
-      };
+      if (requiresOwnRecord) {
+        const isOwnRecord = this.isDocOwner(requiresOwnRecord, request, user);
+
+        if (!isOwnRecord) {
+          throw new ForbiddenException('Forbidden, only owner can access');
+        };
+      }
     }
 
     return true;

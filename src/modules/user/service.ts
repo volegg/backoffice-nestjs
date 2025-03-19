@@ -51,7 +51,7 @@ export class UserService {
       ...dto,
       name: AppRoles.standart,
       roles: [AppRoles.standart],
-      permissions: [permission.read, permission.update, transactionPermission.read],
+      permissions: [permission.read, permission.update, transactionPermission.read, transactionPermission.find],
     }
 
     return this.create(standartDto);

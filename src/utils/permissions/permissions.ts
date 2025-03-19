@@ -2,10 +2,8 @@ export function permissionsFor(controllerName: string) {
   return {
     create: `${controllerName}:create`,
     read: `${controllerName}:read`,
-    readAny: `${controllerName}:read:any`,
+    find: `${controllerName}:find`,
     update: `${controllerName}:update`,
-    updateAny: `${controllerName}:update:any`,
     delete: `${controllerName}:delete`,
-    deleteAny: `${controllerName}:delete:any`,
   };
 };

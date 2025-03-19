@@ -28,7 +28,7 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('read:any')
+  @Permissions('find')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
   async page(@Query('offset') offset: number, @Query('limit') limit: number): Promise<User[]> {
@@ -37,7 +37,7 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('read', 'read:any')
+  @Permissions('read')
   @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
@@ -73,7 +73,7 @@ export class UserController {
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('udpate', 'update:any')
+  @Permissions('udpate')
   @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
@@ -84,12 +84,11 @@ export class UserController {
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('delete', 'delete:any')
+  @Permissions('delete')
+  @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Delete User Request Received' })
   @ApiResponse({ status: 400, description: 'Delete User Request Failed' })
-  async delete(
-    @Param('id') id: string,
-  ): Promise<IGenericMessageBody> {
+  async delete(@Param('id') id: string): Promise<IGenericMessageBody> {
     return await this.service.delete(id);
   }
 }
