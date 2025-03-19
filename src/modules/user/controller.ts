@@ -31,8 +31,8 @@ export class UserController {
   @Permissions('read:any')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async getPage(@Query('offset') offset: number, @Query('limit') limit: number): Promise<User[]> {
-    return await this.service.getUsers(offset, limit);
+  async page(@Query('offset') offset: number, @Query('limit') limit: number): Promise<User[]> {
+    return await this.service.page(offset, limit);
   }
 
   @Get(':id')
@@ -41,7 +41,7 @@ export class UserController {
   @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async getById(@Param('id') id: string): Promise<User> {
+  async get(@Param('id') id: string): Promise<User> {
     const user = await this.service.get(id);
 
     if (!user) {

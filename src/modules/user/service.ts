@@ -27,7 +27,7 @@ export class UserService {
     return this.model.findById(id).exec();
   }
 
-  getUsers(offset: number, limit: number): Promise<User[]> {
+  page(offset: number, limit = 10): Promise<User[]> {
     return this.model.find().skip(offset).limit(limit).exec();
   }
 

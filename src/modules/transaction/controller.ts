@@ -28,11 +28,12 @@ export class TransactionController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('read:any')
+  @Permissions('read', 'read:any')
+  @IsOwner('user')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async getPage(@Query('offset') offset: number, @Query('limit') limit: number): Promise<Transaction[]> {
-    return await this.service.getUsers(offset, limit);
+  async page(@Param('user') user: string, @Query('offset') offset: number, @Query('limit') limit: number): Promise<Transaction[]> {
+    return await this.service.page(offset, limit, user);
   }
 
   @Get(':id')
@@ -41,7 +42,7 @@ export class TransactionController {
   @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async getOne(@Param('id') id: string): Promise<Transaction> {
+  async get(@Param('id') id: string): Promise<Transaction> {
     const user = await this.service.get(id);
 
     if (!user) {

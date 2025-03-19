@@ -17,7 +17,7 @@ export class PermissionsGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const requiredPermissions = this.reflector
       .get<string[]>(permissionKey, context.getHandler())
-      .map((p) => context.getClass().name.slice(0, -10) + ':' + p);
+      .map((p) => context.getClass().name.slice(0, -10).toLowerCase() + ':' + p);
 
     if (!requiredPermissions) {
       return true;
@@ -34,18 +34,14 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    if (!user.permissions.length || !user.roles.length) {
+    if (!user[permissionKey].length || !user.roles.length) {
       throw new ForbiddenException('User does not have any permissions');
     }
 
-    let hasAnyMarkToAvoidOwner = false;
+    const userPermissons = user[permissionKey].map((p) => p.toLowerCase());
 
-    const hasPermission = requiredPermissions.every(permission => {
-      if (permission.endsWith(':any')) {
-        hasAnyMarkToAvoidOwner = true;
-      }
-
-      return user.permissions.includes(permission);
+    const hasPermission = requiredPermissions.some(permission => {
+      return userPermissons.includes(permission);
     });
 
     if (!hasPermission) {
@@ -54,7 +50,7 @@ export class PermissionsGuard implements CanActivate {
 
     const requiresOwnRecord = this.reflector.get<string | undefined>(docOwner, context.getHandler());
 
-    if (requiresOwnRecord && !hasAnyMarkToAvoidOwner) {
+    if (requiresOwnRecord) {
       const isOwnRecord = this.isDocOwner(requiresOwnRecord, request, user);
 
       if (!isOwnRecord) {
@@ -66,20 +62,12 @@ export class PermissionsGuard implements CanActivate {
   }
 
   private isDocOwner(fieldName: string, request: Request, user: User): boolean {
-    const value = String(user[fieldName]);
+    const value = String(user.id);
 
-    if (request.params && request.params[fieldName] && request.params[fieldName] === value) {
-      return true;
-    }
+    const rV = request.params && request.params[fieldName] && request.params[fieldName] === value;
+    const rB = request.body && request.body[fieldName] && request.body[fieldName] === value;
+    const rQ = request.query && request.query[fieldName] && request.query[fieldName] === value;
 
-    if (request.body && request.body[fieldName] && request.body[fieldName] === value) {
-      return true;
-    }
-
-    if (request.query && request.query[fieldName] && request.query[fieldName] === value) {
-      return true;
-    }
-
-    return false;
+    return rV || rB || rQ;
   }
 }

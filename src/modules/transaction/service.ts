@@ -23,8 +23,10 @@ export class TransactionService {
     return this.model.findById(id).populate('user').exec();
   }
 
-  getUsers(offset: number, limit: number): Promise<Transaction[]> {
-    return this.model.find().skip(offset).limit(limit).exec();
+  page(offset: number, limit = 10, user: string): Promise<Transaction[]> {
+    const condition = user ? { user } : undefined;
+
+    return this.model.find(condition).skip(offset).limit(limit).exec();
   }
 
   getByEmail(email: string): Promise<Transaction> {
