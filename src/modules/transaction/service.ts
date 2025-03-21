@@ -8,6 +8,8 @@ import {
 import { Transaction } from './model';
 import { TransactionUpdateDto } from './dto/update';
 import { TransactionCreateDto } from './dto/create';
+import { pagination, type Paginatted } from 'utils/pagination/pagination';
+import type { PaginationParams } from 'utils/pagination/pagination.decorator';
 
 export interface IGenericMessageBody {
   message: string;
@@ -23,16 +25,14 @@ export class TransactionService {
     return this.model.findById(id).populate('user').exec();
   }
 
-  page(offset: number, limit = 10, user: string): Promise<Transaction[]> {
-    const condition = user ? { user } : undefined;
-
-    return this.model.find(condition).skip(offset).limit(limit).populate('user').exec();
+  page({ page, limit = 10 }: PaginationParams): Promise<Paginatted<Transaction>> {
+    return pagination(this.model.find().populate('user'), { page, limit });
   }
 
-  pageMy(offset: number, limit = 10, user: string): Promise<Transaction[]> {
-    const condition = user ? { user: new Types.ObjectId(user) } : undefined;
+  pageMy(userId: string, { page, limit = 10 }: PaginationParams): Promise<Paginatted<Transaction>> {
+    const condition = userId ? { user: new Types.ObjectId(userId) } : undefined;
 
-    return this.model.find(condition).skip(offset).limit(limit).exec();
+    return pagination(this.model.find(condition), { page, limit });
   }
 
   getByEmail(email: string): Promise<Transaction> {
@@ -63,9 +63,9 @@ export class TransactionService {
   }
 
   delete(id: string): Promise<IGenericMessageBody> {
-    return this.model.deleteOne({ id }).then(user => {
-      if (user.deletedCount === 1) {
-        return { message: `Deleted ${id} from records` };
+    return this.model.findByIdAndDelete(id).then(user => {
+      if (user) {
+        return { message: `Deleted ${user.id} from records` };
       } else {
         throw new BadRequestException(
           `Failed to delete a user by id ${id}.`,

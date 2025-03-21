@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -21,6 +20,7 @@ import type { Transaction } from './model';
 import { TransactionCreateDto } from './dto/create';
 import { GetUser } from '../../utils/user/getUser';
 import { User } from '../../modules/user/model';
+import { Pagination, PaginationParams } from '../../utils/pagination/pagination.decorator';
 
 @ApiBearerAuth()
 @ApiTags('transactions')
@@ -31,11 +31,10 @@ export class TransactionController {
   @Get()
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
   @Permissions('find')
-  @IsOwner('user')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async page(@Param('user') user: string, @Query('offset') offset: number, @Query('limit') limit: number): Promise<Transaction[]> {
-    return await this.service.page(offset, limit, user);
+  async page(@Pagination() pagination: PaginationParams) {
+    return await this.service.page(pagination);
   }
 
   @Get(':id')
@@ -61,8 +60,8 @@ export class TransactionController {
   @Permissions('read')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
-  async pageMy(@GetUser() user: User, @Query('offset') offset: number, @Query('limit') limit: number): Promise<Transaction[]> {
-    return await this.service.pageMy(offset, limit, user.id);
+  async pageMy(@GetUser() user: User, @Pagination() pagination: PaginationParams) {
+    return await this.service.pageMy(user.id, pagination);
   }
 
   @Post()
