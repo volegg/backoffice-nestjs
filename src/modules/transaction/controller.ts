@@ -16,9 +16,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TransactionService, IGenericMessageBody } from './service';
 import { TransactionUpdateDto } from './dto/update';
-import { IsOwner, Permissions, PermissionsGuard } from 'utils/permission.guard';
+import { IsOwner, Permissions, PermissionsGuard } from '../../utils/permissions/permission.guard';
 import type { Transaction } from './model';
 import { TransactionCreateDto } from './dto/create';
+import { GetUser } from '../../utils/user/getUser';
+import { User } from '../../modules/user/model';
 
 @ApiBearerAuth()
 @ApiTags('transactions')
@@ -54,6 +56,15 @@ export class TransactionController {
     return user;
   }
 
+  @Get('my')
+  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+  @Permissions('read')
+  @ApiResponse({ status: 200, description: 'Patch User Request Received' })
+  @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
+  async pageMy(@GetUser() user: User, @Query('offset') offset: number, @Query('limit') limit: number): Promise<Transaction[]> {
+    return await this.service.pageMy(offset, limit, user.id);
+  }
+
   @Post()
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
   @Permissions('create')
@@ -65,7 +76,7 @@ export class TransactionController {
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('udpate')
+  @Permissions('update')
   @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })

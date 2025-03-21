@@ -1,2 +1,4 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyType = any;
+export type AnyType = any;
+
+export type PermissionOperations = 'create' | 'read' | 'find' | 'update' | 'delete';

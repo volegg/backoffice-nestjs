@@ -9,7 +9,7 @@ import { ConfigService } from '../config/config.service';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/module';
 import { WinstonModule } from '../winston/winston.module';
-import { TransactionModule } from 'modules/transaction/module';
+import { TransactionModule } from '../transaction/module';
 
 @Module({
   imports: [

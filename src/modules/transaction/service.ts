@@ -26,6 +26,12 @@ export class TransactionService {
   page(offset: number, limit = 10, user: string): Promise<Transaction[]> {
     const condition = user ? { user } : undefined;
 
+    return this.model.find(condition).skip(offset).limit(limit).populate('user').exec();
+  }
+
+  pageMy(offset: number, limit = 10, user: string): Promise<Transaction[]> {
+    const condition = user ? { user: new Types.ObjectId(user) } : undefined;
+
     return this.model.find(condition).skip(offset).limit(limit).exec();
   }
 

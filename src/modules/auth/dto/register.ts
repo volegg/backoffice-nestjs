@@ -1,3 +1,3 @@
-import { UserRegisterDto } from 'modules/user/dto/register';
+import { UserRegisterDto } from '../../user/dto/register';
 
 export class RegisterDto extends UserRegisterDto { }

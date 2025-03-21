@@ -15,10 +15,11 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService, IGenericMessageBody } from './service';
-import { UserUpdateDto } from './dto/update';
-import { IsOwner, Permissions, PermissionsGuard } from 'utils/permission.guard';
+import { UserOwnUpdateDto, UserUpdateDto } from './dto/update';
+import { IsOwner, Permissions, PermissionsGuard } from '../../utils/permissions/permission.guard';
 import type { User } from './model';
 import { UserRegisterDto } from './dto/register';
+import { GetUser } from '../../utils/user/getUser';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -58,28 +59,40 @@ export class UserController {
   @Permissions('create')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   async create(@Body() payload: UserRegisterDto) {
     return await this.service.createStandart(payload);
   }
 
-  @Post('/admin')
+  @Post('admin')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
   @Permissions('create')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   async createAdmin(@Body() payload: UserRegisterDto) {
     return await this.service.createAdmin(payload);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('udpate')
+  @Permissions('update')
   @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async update(@Param('id') id: string, @Body() payload: UserUpdateDto) {
     return await this.service.edit(id, payload);
+  }
+
+  @Patch('me')
+  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+  @Permissions('update')
+  @ApiResponse({ status: 200, description: 'Patch User Request Received' })
+  @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async updateMe(@GetUser() user: User, @Body() payload: UserOwnUpdateDto) {
+    return await this.service.edit(user.id, payload);
   }
 
   @Delete(':id')

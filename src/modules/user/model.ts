@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as crypto from 'crypto';
-import { AppRoles } from 'const';
+import { AppRoles } from '../../const';
 
 @Schema({
   timestamps: true,
@@ -11,10 +11,10 @@ export class User extends Document {
   @Prop({ required: true, unique: true })
     email: string;
 
-  @Prop({ required: true, minlength: 6 })
+  @Prop({ required: true, minlength: 6, maxlength: 16 })
     password: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, minlength: 3, maxlength: 32 })
     name: string;
 
   @Prop({ type: [String], enum: AppRoles, default: [AppRoles.standart] })

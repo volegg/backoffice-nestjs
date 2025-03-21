@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsMongoId, IsNumber } from 'class-validator';
-import { TransactionStatus, TransactionSubType, TransactionType } from 'const';
+import { TransactionStatus, TransactionSubType, TransactionType } from '../../../const';
 import { Types } from 'mongoose';
 
 export class TransactionCreateDto {

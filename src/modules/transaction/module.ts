@@ -3,7 +3,7 @@ import { TransactionService } from './service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Transaction, TransactionSchema } from './model';
 import { TransactionController } from './controller';
-import { User, UserSchema } from 'modules/user/model';
+import { User, UserSchema } from '../user/model';
 
 @Module({
   imports: [MongooseModule.forFeature([

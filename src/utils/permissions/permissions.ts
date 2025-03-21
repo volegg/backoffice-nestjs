@@ -1,4 +1,6 @@
-export function permissionsFor(controllerName: string) {
+import type { PermissionOperations } from '../../types';
+
+export function permissionsFor(controllerName: string): Record<PermissionOperations, string> {
   return {
     create: `${controllerName}:create`,
     read: `${controllerName}:read`,

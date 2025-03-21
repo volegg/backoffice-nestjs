@@ -1,5 +1,22 @@
 # Backoffice
 
+Web-client: https://oleggnet.dev/cv/backoffice
+
+Admin:
+```
+god@god.email
+AA1111
+```
+
+Standars with transactions:
+```
+sd344asssd@sdfs.dc
+qqww33
+```
+
+Web-client repository: https://github.com/volegg/backoffice-reactjs
+
+
 ## Installation
 
 1. Requirements.

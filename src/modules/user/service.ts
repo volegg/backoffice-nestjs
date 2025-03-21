@@ -6,12 +6,12 @@ import {
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
-import { AppRoles } from 'const';
-import { permissionsFor } from 'utils/permissions/permissions';
+import { permissionsFor } from '../../utils/permissions/permissions';
 import { User } from './model';
 import { UserUpdateDto } from './dto/update';
 import { UserCreateDto } from './dto/create';
 import { UserRegisterDto } from './dto/register';
+import { AppRoles } from '../../const';
 
 export interface IGenericMessageBody {
   message: string;
@@ -24,7 +24,7 @@ export class UserService {
   ) { }
 
   get(id: string): Promise<User> {
-    return this.model.findById(id).exec();
+    return this.model.findById(id, { password: 0 }).exec();
   }
 
   page(offset: number, limit = 10): Promise<User[]> {
@@ -60,7 +60,7 @@ export class UserService {
   async createAdmin(dto: UserRegisterDto): Promise<User> {
     const permission = permissionsFor('User');
     const transactionPermission = permissionsFor('Transaction');
-    const adminDto = {
+    const adminDto: UserCreateDto = {
       ...dto,
       name: AppRoles.admin,
       roles: [AppRoles.admin],
@@ -79,7 +79,15 @@ export class UserService {
       );
     }
 
-    await this.model.findByIdAndUpdate(id, dto).exec();
+    Object.keys(dto).forEach((key) => {
+      user[key] = dto[key];
+    });
+
+    try {
+      await user.save();
+    } catch (ex) {
+      throw new BadRequestException(ex.message);
+    }
 
     return this.get(id);
   }
