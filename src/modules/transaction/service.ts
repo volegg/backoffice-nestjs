@@ -8,8 +8,8 @@ import {
 import { Transaction } from './model';
 import { TransactionUpdateDto } from './dto/update';
 import { TransactionCreateDto } from './dto/create';
-import { pagination, type Paginatted } from 'utils/pagination/pagination';
-import type { PaginationParams } from 'utils/pagination/pagination.decorator';
+import { pagination, type Paginatted } from '../../utils/pagination/pagination';
+import type { PaginationParams } from '../../utils/pagination/pagination.decorator';
 
 export interface IGenericMessageBody {
   message: string;
@@ -25,14 +25,14 @@ export class TransactionService {
     return this.model.findById(id).populate('user').exec();
   }
 
-  page({ page, limit = 10 }: PaginationParams): Promise<Paginatted<Transaction>> {
-    return pagination(this.model.find().populate('user'), { page, limit });
+  page(config: PaginationParams): Promise<Paginatted<Transaction>> {
+    return pagination(this.model.find().populate('user'), this.model.find().populate('user'), config);
   }
 
-  pageMy(userId: string, { page, limit = 10 }: PaginationParams): Promise<Paginatted<Transaction>> {
+  pageMy(userId: string, config: PaginationParams): Promise<Paginatted<Transaction>> {
     const condition = userId ? { user: new Types.ObjectId(userId) } : undefined;
 
-    return pagination(this.model.find(condition), { page, limit });
+    return pagination(this.model.find(condition), this.model.find(condition), config);
   }
 
   getByEmail(email: string): Promise<Transaction> {

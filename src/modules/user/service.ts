@@ -12,6 +12,8 @@ import { UserUpdateDto } from './dto/update';
 import { UserCreateDto } from './dto/create';
 import { UserRegisterDto } from './dto/register';
 import { AppRoles } from '../../const';
+import { pagination, Paginatted } from '../../utils/pagination/pagination';
+import { PaginationParams } from '../../utils/pagination/pagination.decorator';
 
 export interface IGenericMessageBody {
   message: string;
@@ -27,8 +29,8 @@ export class UserService {
     return this.model.findById(id, { password: 0 }).exec();
   }
 
-  page(offset: number, limit = 10): Promise<User[]> {
-    return this.model.find().skip(offset).limit(limit).exec();
+  page(config: PaginationParams): Promise<Paginatted<User>> {
+    return pagination(this.model.find(), this.model.find(), config);
   }
 
   getByEmail(email: string): Promise<User> {

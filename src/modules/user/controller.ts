@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -20,6 +19,7 @@ import { IsOwner, Permissions, PermissionsGuard } from '../../utils/permissions/
 import type { User } from './model';
 import { UserRegisterDto } from './dto/register';
 import { GetUser } from '../../utils/user/getUser';
+import { Pagination, type PaginationParams } from '../../utils/pagination/pagination.decorator';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -32,8 +32,8 @@ export class UserController {
   @Permissions('find')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async page(@Query('offset') offset: number, @Query('limit') limit: number): Promise<User[]> {
-    return await this.service.page(offset, limit);
+  async page(@Pagination() pagination: PaginationParams) {
+    return await this.service.page(pagination);
   }
 
   @Get(':id')

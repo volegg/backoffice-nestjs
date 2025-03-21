@@ -20,7 +20,7 @@ import type { Transaction } from './model';
 import { TransactionCreateDto } from './dto/create';
 import { GetUser } from '../../utils/user/getUser';
 import { User } from '../../modules/user/model';
-import { Pagination, PaginationParams } from '../../utils/pagination/pagination.decorator';
+import { Pagination, type PaginationParams } from '../../utils/pagination/pagination.decorator';
 
 @ApiBearerAuth()
 @ApiTags('transactions')
