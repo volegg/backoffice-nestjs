@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
-import { UserService } from '../user/service';
-import type { User } from '../user/model';
+import { UserService } from '../users/service';
+import type { User } from '../users/model';
 import { LoginDto } from './dto/login';
 
 export type ITokenReturnBody = {

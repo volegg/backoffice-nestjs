@@ -5,8 +5,6 @@ export enum AppRoles {
   halk = 'halk',
 }
 
-export const userDataAccessRoles = [AppRoles.editor, AppRoles.admin];
-
 export enum TransactionType {
   deposit = 'deposit',
   credit = 'credit',

@@ -1,13 +1,12 @@
-import { Controller, Body, Post, UsePipes, ValidationPipe, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Body, Post, UsePipes, ValidationPipe, UseGuards, Req } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, ITokenReturnBody } from './auth.service';
 import { LoginDto } from './dto/login';
-import { UserService } from '../user/service';
+import { UserService } from '../users/service';
 import { RegisterDto } from './dto/register';
-import { GetUser } from '../../utils/user/getUser';
-import { User } from '../user/model';
 import { Request } from 'express';
+import { TransactionService } from '../transactions/service';
 
 @Controller('api/auth')
 @ApiTags('authentication')
@@ -15,15 +14,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly transactionService: TransactionService,
   ) { }
-
-  @Get('me')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
-  @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
-  async getMe(@GetUser() user: User): Promise<User> {
-    return user;
-  }
 
   @Post('login')
   @ApiResponse({ status: 201, description: 'Login Completed' })
@@ -50,6 +42,9 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async register(@Body() payload: RegisterDto): Promise<ITokenReturnBody> {
     const user = await this.userService.createStandart(payload);
+
+    // note: test purpose only, remove for production
+    await this.transactionService.genearate(String(user.id));
 
     return await this.authService.createToken(user);
   }

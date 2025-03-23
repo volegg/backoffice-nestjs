@@ -2,17 +2,13 @@
 
 Web-client: https://oleggnet.dev/cv/backoffice
 
-Admin:
+God Admin:
 ```
-god@god.email
-AA1111
+god@dog.com
+aa1111
 ```
 
-Standars with transactions:
-```
-sd344asssd@sdfs.dc
-qqww33
-```
+Signup feture create new user with random generated transaction (for admin as well).
 
 Web-client repository: https://github.com/volegg/backoffice-reactjs
 
@@ -75,37 +71,14 @@ Uses husky for pre-commit and pre-push to autofix all fixable issues and validat
 
 ### GOD role
 
-POST /api/auth/login
-
-```json
-{
-    "email": "god@god.email",
-    "password": "AA1111"
-}
-```
-
-### ADMIN role
+God role has ability to create Admin/Standart roles wtih auto-generated transactons
 
 POST /api/auth/login
 
 ```json
 {
-    "email": "new.admin@test.com",
-    "password": "AA1111"
-}
-```
-
-### Create ADMIN
-
-Use GOD user to perform
-
-POST /api/users/admin
-
-```json
-{
-    "email": "email@domain.com",
-    "password": "AA1111",
-    "name": "admin"
+    "email": "god@dog.com",
+    "password": "aa1111"
 }
 ```
 
@@ -117,8 +90,8 @@ After logged in
 
 ```json
 {
-    "email": "god.user@god.email",
-    "password": "AA1111"
+    "email": "god@dog.com",
+    "password": "aa1111"
 }
 ```
 

@@ -13,19 +13,22 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserService, IGenericMessageBody } from './service';
-import { UserOwnUpdateDto, UserUpdateDto } from './dto/update';
-import { IsOwner, Permissions, PermissionsGuard } from '../../utils/permissions/permission.guard';
+import { UserService } from './service';
+import { UserUpdateDto } from './dto/update';
+import { Permissions, PermissionsGuard } from '../../utils/permissions/permission.guard';
 import type { User } from './model';
 import { UserRegisterDto } from './dto/register';
-import { GetUser } from '../../utils/user/getUser';
 import { Pagination, type PaginationParams } from '../../utils/pagination/pagination.decorator';
+import { TransactionService } from '../transactions/service';
 
 @ApiBearerAuth()
 @ApiTags('users')
 @Controller('api/users')
 export class UserController {
-  constructor(private readonly service: UserService) { }
+  constructor(
+    private readonly service: UserService,
+    private readonly serviceTransaction: TransactionService,
+  ) { }
 
   @Get()
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
@@ -38,8 +41,7 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('read')
-  @IsOwner('id')
+  @Permissions('view')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
   async get(@Param('id') id: string): Promise<User> {
@@ -61,7 +63,12 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async create(@Body() payload: UserRegisterDto) {
-    return await this.service.createStandart(payload);
+    const user = await this.service.createStandart(payload);
+
+    // note: test purpose only, remove for production
+    await this.serviceTransaction.genearate(String(user.id));
+
+    return user;
   }
 
   @Post('admin')
@@ -71,37 +78,32 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async createAdmin(@Body() payload: UserRegisterDto) {
-    return await this.service.createAdmin(payload);
+    const user = await this.service.createAdmin(payload);
+
+    // note: test purpose only, remove for production
+    await this.serviceTransaction.genearate(String(user.id));
+
+    return user;
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('update')
-  @IsOwner('id')
+  @Permissions('edit')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async update(@Param('id') id: string, @Body() payload: UserUpdateDto) {
-    return await this.service.edit(id, payload);
-  }
-
-  @Patch('me')
-  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('update')
-  @ApiResponse({ status: 200, description: 'Patch User Request Received' })
-  @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  async updateMe(@GetUser() user: User, @Body() payload: UserOwnUpdateDto) {
-    return await this.service.edit(user.id, payload);
+    return await this.service.update(id, payload);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
   @Permissions('delete')
-  @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Delete User Request Received' })
   @ApiResponse({ status: 400, description: 'Delete User Request Failed' })
-  async delete(@Param('id') id: string): Promise<IGenericMessageBody> {
+  async deleteMark(@Param('id') id: string): Promise<User> {
+    await this.serviceTransaction.deleteByUser(id);
+
     return await this.service.delete(id);
   }
 }

@@ -2,14 +2,14 @@ import { SetMetadata, CanActivate, ExecutionContext, Injectable, ForbiddenExcept
 import { Reflector } from '@nestjs/core';
 import { AppRoles } from '../../const';
 import type { User } from '../../modules/users/model';
-import { PermissionOperations } from '../../types';
+import { PermissionProfileOperations } from '../../types';
 
 const permissionKey = 'permissions';
 
-export const Permissions = (...permissions: PermissionOperations[]) => SetMetadata(permissionKey, permissions);
+export const PermissionsProfile = (...permissions: PermissionProfileOperations[]) => SetMetadata(permissionKey, permissions);
 
 @Injectable()
-export class PermissionsGuard implements CanActivate {
+export class PermissionsProfileGuard implements CanActivate {
   constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {

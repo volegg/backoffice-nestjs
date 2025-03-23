@@ -6,11 +6,11 @@ import { Types } from 'mongoose';
 export class TransactionCreateDto {
   @ApiProperty({ enum: TransactionType })
   @IsEnum(TransactionType)
-    type: string;
+    type: TransactionType;
 
   @ApiProperty({ enum: TransactionSubType })
   @IsEnum(TransactionSubType)
-    subType: string[];
+    subType: TransactionSubType;
 
   @ApiProperty()
   @IsNumber()
@@ -18,7 +18,7 @@ export class TransactionCreateDto {
 
   @ApiProperty({ enum: TransactionStatus })
   @IsEnum(TransactionStatus)
-    status: string;
+    status: TransactionStatus;
 
   @ApiProperty()
   @IsMongoId()

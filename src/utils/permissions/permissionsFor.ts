@@ -3,9 +3,9 @@ import type { PermissionOperations } from '../../types';
 export function permissionsFor(controllerName: string): Record<PermissionOperations, string> {
   return {
     create: `${controllerName}:create`,
-    read: `${controllerName}:read`,
+    view: `${controllerName}:view`,
     find: `${controllerName}:find`,
-    update: `${controllerName}:update`,
+    edit: `${controllerName}:edit`,
     delete: `${controllerName}:delete`,
   };
 };

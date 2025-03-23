@@ -7,9 +7,10 @@ import { MongooseModule, MongooseModuleAsyncOptions } from '@nestjs/mongoose';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { AuthModule } from '../auth/auth.module';
-import { UserModule } from '../user/module';
+import { UserModule } from '../users/module';
 import { WinstonModule } from '../winston/winston.module';
-import { TransactionModule } from '../transaction/module';
+import { TransactionModule } from '../transactions/module';
+import { ProfileModule } from '../profile/module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { TransactionModule } from '../transaction/module';
     }),
     ConfigModule,
     AuthModule,
+    ProfileModule,
     UserModule,
     TransactionModule,
   ],

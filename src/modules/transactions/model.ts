@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { TransactionStatus, TransactionSubType, TransactionType } from '../../const';
-import { User } from '../../modules/user/model';
+import { User } from '../users/model';
 import { Document, Types } from 'mongoose';
 
 @Schema({

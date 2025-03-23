@@ -6,7 +6,6 @@ import {
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
-import { permissionsFor } from '../../utils/permissions/permissions';
 import { User } from './model';
 import { UserUpdateDto } from './dto/update';
 import { UserCreateDto } from './dto/create';
@@ -14,10 +13,8 @@ import { UserRegisterDto } from './dto/register';
 import { AppRoles } from '../../const';
 import { pagination, Paginatted } from '../../utils/pagination/pagination';
 import { PaginationParams } from '../../utils/pagination/pagination.decorator';
-
-export interface IGenericMessageBody {
-  message: string;
-}
+import { permissionList } from '../../utils/permissions/permissionList';
+import { getRndName } from '../../utils/randomNames';
 
 @Injectable()
 export class UserService {
@@ -47,32 +44,28 @@ export class UserService {
   }
 
   async createStandart(dto: UserRegisterDto): Promise<User> {
-    const permission = permissionsFor('User');
-    const transactionPermission = permissionsFor('Transaction');
     const standartDto = {
       ...dto,
-      name: AppRoles.standart,
+      name: getRndName(),
       roles: [AppRoles.standart],
-      permissions: [permission.read, permission.update, transactionPermission.read, transactionPermission.find],
+      permissions: permissionList.profileList,
     }
 
     return this.create(standartDto);
   }
 
   async createAdmin(dto: UserRegisterDto): Promise<User> {
-    const permission = permissionsFor('User');
-    const transactionPermission = permissionsFor('Transaction');
     const adminDto: UserCreateDto = {
       ...dto,
-      name: AppRoles.admin,
+      name: getRndName(),
       roles: [AppRoles.admin],
-      permissions: Object.values(permission).concat(Object.values(transactionPermission)),
+      permissions: permissionList.list,
     }
 
     return this.create(adminDto);
   }
 
-  async edit(id: string, dto: UserUpdateDto): Promise<User> {
+  async update(id: string, dto: UserUpdateDto): Promise<User> {
     const user = await this.get(id);
 
     if (!user) {
@@ -94,16 +87,8 @@ export class UserService {
     return this.get(id);
   }
 
-  delete(id: string): Promise<IGenericMessageBody> {
-    return this.model.deleteOne({ id }).then(user => {
-      if (user.deletedCount === 1) {
-        return { message: `Deleted ${id} from records` };
-      } else {
-        throw new BadRequestException(
-          `Failed to delete a user by id ${id}.`,
-        );
-      }
-    });
+  delete(id: string): Promise<User> {
+    return this.model.findByIdAndDelete(id).exec();
   }
 
   private async create(dto: UserCreateDto): Promise<User> {
@@ -111,7 +96,7 @@ export class UserService {
 
     if (user) {
       throw new NotAcceptableException(
-        'The account with email already exists.',
+        'The profile with email already exists.',
       );
     }
 

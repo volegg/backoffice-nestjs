@@ -13,13 +13,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { TransactionService, IGenericMessageBody } from './service';
+import { TransactionService } from './service';
 import { TransactionUpdateDto } from './dto/update';
-import { IsOwner, Permissions, PermissionsGuard } from '../../utils/permissions/permission.guard';
+import { Permissions, PermissionsGuard } from '../../utils/permissions/permission.guard';
 import type { Transaction } from './model';
 import { TransactionCreateDto } from './dto/create';
-import { GetUser } from '../../utils/user/getUser';
-import { User } from '../../modules/user/model';
 import { Pagination, type PaginationParams } from '../../utils/pagination/pagination.decorator';
 
 @ApiBearerAuth()
@@ -39,8 +37,7 @@ export class TransactionController {
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('read')
-  @IsOwner('id')
+  @Permissions('view')
   @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
   @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
   async get(@Param('id') id: string): Promise<Transaction> {
@@ -55,15 +52,6 @@ export class TransactionController {
     return user;
   }
 
-  @Get('my')
-  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('read')
-  @ApiResponse({ status: 200, description: 'Patch User Request Received' })
-  @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
-  async pageMy(@GetUser() user: User, @Pagination() pagination: PaginationParams) {
-    return await this.service.pageMy(user.id, pagination);
-  }
-
   @Post()
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
   @Permissions('create')
@@ -75,8 +63,7 @@ export class TransactionController {
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-  @Permissions('update')
-  @IsOwner('id')
+  @Permissions('edit')
   @ApiResponse({ status: 200, description: 'Patch User Request Received' })
   @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
@@ -87,10 +74,9 @@ export class TransactionController {
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), PermissionsGuard)
   @Permissions('delete')
-  @IsOwner('id')
   @ApiResponse({ status: 200, description: 'Delete User Request Received' })
   @ApiResponse({ status: 400, description: 'Delete User Request Failed' })
-  async delete(@Param('id') id: string): Promise<IGenericMessageBody> {
+  async delete(@Param('id') id: string): Promise<Transaction> {
     return await this.service.delete(id);
   }
 }

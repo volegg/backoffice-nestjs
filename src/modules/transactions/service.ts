@@ -10,6 +10,8 @@ import { TransactionUpdateDto } from './dto/update';
 import { TransactionCreateDto } from './dto/create';
 import { pagination, type Paginatted } from '../../utils/pagination/pagination';
 import type { PaginationParams } from '../../utils/pagination/pagination.decorator';
+import { TransactionStatus, TransactionSubType, TransactionType } from '../../const';
+import { getRandomInt } from '../../utils/getRandomInt';
 
 export interface IGenericMessageBody {
   message: string;
@@ -29,7 +31,7 @@ export class TransactionService {
     return pagination(this.model.find().populate('user'), this.model.find().populate('user'), config);
   }
 
-  pageMy(userId: string, config: PaginationParams): Promise<Paginatted<Transaction>> {
+  pageByUserId(userId: string, config: PaginationParams): Promise<Paginatted<Transaction>> {
     const condition = userId ? { user: new Types.ObjectId(userId) } : undefined;
 
     return pagination(this.model.find(condition), this.model.find(condition), config);
@@ -62,24 +64,52 @@ export class TransactionService {
     return this.get(id);
   }
 
-  delete(id: string): Promise<IGenericMessageBody> {
-    return this.model.findByIdAndDelete(id).then(user => {
-      if (user) {
-        return { message: `Deleted ${user.id} from records` };
-      } else {
-        throw new BadRequestException(
-          `Failed to delete a user by id ${id}.`,
-        );
-      }
-    });
+  delete(id: string): Promise<Transaction> {
+    return this.model.findByIdAndDelete(id).exec();
+  }
+
+  deleteByUser(id: string): Promise<void> {
+    this.model.deleteMany({ user: new Types.ObjectId(id) }).exec();
+
+    return;
   }
 
   async create(dto: TransactionCreateDto): Promise<Transaction> {
-    dto.user = new Types.ObjectId(dto.user);
+    if (typeof dto.user === 'string') {
+      dto.user = new Types.ObjectId(dto.user);
+    }
 
     const newUser = new this.model(dto);
 
     return newUser.save();
+  }
+
+  // note: test purpose only, remove for production
+  async genearate(id: string) {
+    if (Math.random() < 0.25) {
+      return;
+    }
+
+    const len = getRandomInt(2, 40);
+
+    for (let i = 0; i < len; i++) {
+      await this.create(generate());
+    }
+
+    return;
+
+    function generate(): TransactionCreateDto {
+      const status: TransactionStatus = [TransactionStatus.completed, TransactionStatus.failed, TransactionStatus.pending][getRandomInt(0, 2)];
+      const subType: TransactionSubType = [TransactionSubType.purchase, TransactionSubType.refund, TransactionSubType.reward][getRandomInt(0, 2)];
+
+      return {
+        status,
+        subType,
+        type: [TransactionType.credit, TransactionType.deposit][getRandomInt(0, 1)],
+        user: new Types.ObjectId(id),
+        amount: getRandomInt(10, 9999)
+      }
+    }
   }
 
 }
